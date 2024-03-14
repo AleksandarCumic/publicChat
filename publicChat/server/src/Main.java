@@ -7,7 +7,7 @@ import java.util.*;
 public class Main {
 
     public static final int PORT = 9000;
-    private static final int MAX_MESSAGES = 100;
+    private static final int MAX_MESSAGES = 5;
     private static Set<String> usernames = new HashSet<>();
     private static List<String> messages = new ArrayList<>();
     private static List<String> zabranjenePoruke = new ArrayList<>();

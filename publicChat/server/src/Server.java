@@ -19,7 +19,6 @@ public class Server implements Runnable{
     @Override
     public void run() {
 
-
         try{
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
@@ -121,7 +120,7 @@ public class Server implements Runnable{
             podeliPoruku(obradjenaPoruka);
             return obradjenaPoruka;
         }
-        obradjenaPoruka = formirajPoruku("*****");
+        //obradjenaPoruka = formirajPoruku("*****");
         Main.dodajPoruku(obradjenaPoruka);
         podeliPoruku(obradjenaPoruka);
 
