@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +33,9 @@ public class Server implements Runnable{
                 if(poruka == null){
                     break;
                 }
-                obradiPoruku(poruka);
+                poruka = cenzurisiPoruku(poruka);
+                poruka = obradiPoruku(poruka);
+                System.out.println(poruka);
             }
 
         } catch (IOException e){
@@ -65,7 +69,7 @@ public class Server implements Runnable{
     }
 
     private void traziUsername() throws IOException{
-        out.println("Izaberite svoj username: ");
+
         String ime = in.readLine();
         while(!Main.proveraUsername(ime)){
             out.println("Username koji ste zeleli je trenutno zauzet, probajte opet: ");
@@ -76,6 +80,7 @@ public class Server implements Runnable{
     }
 
     private void posaljiDobrodoslicu(){
+        System.out.println("Prikljucio se " + username + "!");
         out.println("Dobrodosao " + username + "!");
     }
 
@@ -89,23 +94,38 @@ public class Server implements Runnable{
     private boolean validnaPoruka(String poruka){
         List<String> lista = Main.getZabranjenePoruke();
         for(String l : lista){
-            if(l.equals(poruka)){
+            if(poruka.contains(l)){
                 return false;
             }
         }
         return true;
     }
 
-    private void obradiPoruku(String poruka){
-        String obradjenaPoruka = formirajPoruku(poruka);
-        if(validnaPoruka(poruka)) {
-            Main.dodajPoruku(obradjenaPoruka);
-            podeliPoruku(poruka);
-            return;
+    private String cenzurisiRec(String rec){
+        char[] cenzurisano = new char[rec.length() - 2];
+        Arrays.fill(cenzurisano, '*');
+        return rec.charAt(0) + new String(cenzurisano) + rec.charAt(rec.length() - 1);
+    }
+
+    private String cenzurisiPoruku(String poruka){
+        for(String cenzurisanaRec : Main.getZabranjenePoruke()){
+            poruka = poruka.replaceAll("\\b" + cenzurisanaRec + "\\b", cenzurisiRec(cenzurisanaRec));
         }
-        poruka = "*****";
-        Main.dodajPoruku(poruka);
-        podeliPoruku(poruka);
+        return poruka;
+    }
+
+    private String obradiPoruku(String poruka){
+        String obradjenaPoruka = formirajPoruku(poruka);
+        if(validnaPoruka(obradjenaPoruka)) {
+            Main.dodajPoruku(obradjenaPoruka);
+            podeliPoruku(obradjenaPoruka);
+            return obradjenaPoruka;
+        }
+        obradjenaPoruka = formirajPoruku("*****");
+        Main.dodajPoruku(obradjenaPoruka);
+        podeliPoruku(obradjenaPoruka);
+
+        return obradjenaPoruka;
     }
 
     private String formirajPoruku(String poruka){

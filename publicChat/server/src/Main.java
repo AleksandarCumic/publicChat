@@ -19,7 +19,6 @@ public class Main {
             System.out.println("Server je uspostavio konekciju. Ocekuje klijente...");
             while(true){
                 Socket socket = serverSocket.accept();
-                System.out.println("Novi klijent se povezao: " + socket);
                 Server s = new Server(socket);
                 Thread server = new Thread(s);
                 aktivniKlijenti.add(s);
